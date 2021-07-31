@@ -1,7 +1,7 @@
-const video=document.querySelector(".player")
-const canvas=document.querySelector(".photo")
-const ctx=canvas.getContext("2d")
-const gallery=document.querySelector(".gallery")
+const video = document.querySelector(".player")
+const canvas = document.querySelector(".photo")
+const ctx = canvas.getContext("2d")
+const gallery = document.querySelector(".gallery")
 const red = document.getElementById('red')
 const green = document.getElementById('green')
 const blue = document.getElementById('blue')
@@ -9,18 +9,28 @@ const brightness = document.getElementById('brightness')
 const grayscale = document.getElementById('grayscale')
 const contrast = document.getElementById('contrast')
 
+var brightnessFilter = 0
+var contrastFilter = 0
+var redFilter = 0
+var greenFilter = 0
+var blueFilter = 0
+var grayscaleFilter = 0
+
+
+
+
 let pixels = null
 let originalPixels = null
 let currentPixels = null
 
 red.onchange = runPipeline
-        green.onchange = runPipeline
-        blue.onchange = runPipeline
-        brightness.onchange = runPipeline
-        grayscale.onchange = runPipeline
-        contrast.onchange = runPipeline
+green.onchange = runPipeline
+blue.onchange = runPipeline
+brightness.onchange = runPipeline
+grayscale.onchange = runPipeline
+contrast.onchange = runPipeline
 
-const getVideo=() => {
+const getVideo = () => {
     navigator.mediaDevices.getUserMedia({
         video: true,
         audio: false
@@ -28,83 +38,84 @@ const getVideo=() => {
         console.log(localMediaStream);
         video.srcObject = localMediaStream
         video.play()
-    }).catch((err) =>{
+    }).catch((err) => {
         console.log(err)
     })
 }
 
-const paintToCanvas=() => {
-    const width=video.videoWidth
-    const height=video.videoHeight
+const paintToCanvas = () => {
+    const width = video.videoWidth
+    const height = video.videoHeight
     canvas.width = width;
     canvas.height = height;
 
     return setInterval(() => {
-        ctx.drawImage(video,0,0,width,height)
-        pixels=ctx.getImageData(0,0,width,height)
+        ctx.drawImage(video, 0, 0, width, height)
+        pixels = ctx.getImageData(0, 0, width, height)
 
-        
-        
-            //getVideo()
-            // pixels=redEffect(pixels)
-            // pixels=rgbSplit(pixels)
-            // ctx.globalAlpha =0.1
-            // pixels=greenScreen(pixels)
 
-            copydat = ctx.getImageData(0, 0, width, height)
-            originalPixels = pixels.data.slice()
-        ctx.putImageData(pixels,0,0)
-    },16);
-    
+        //getVideo()
+        // pixels=redEffect(pixels)
+        // pixels=rgbSplit(pixels)
+        // ctx.globalAlpha =0.1
+        // pixels=greenScreen(pixels)
+
+        copydat = ctx.getImageData(0, 0, width, height)
+        originalPixels = pixels.data.slice()
+        runPipeline()
+
+        ctx.putImageData(pixels, 0, 0)
+    }, 16);
+
 }
 
 
-const takePhoto=() => {
-    const data=canvas.toDataURL("/image/jpeg")
-    const link=document.createElement("a")
-    link.href=data;
+const takePhoto = () => {
+    const data = canvas.toDataURL("/image/jpeg")
+    const link = document.createElement("a")
+    link.href = data;
     link.setAttribute("download", "handsome")
-    link.innerHTML=`<img src="${data}" alt="Handsome man" />`;
-    gallery.insertBefore(link,gallery.lastChild)
+    link.innerHTML = `<img src="${data}" alt="Handsome man" />`;
+    gallery.insertBefore(link, gallery.lastChild)
 }
 
-const redEffect=(pixels)=>{
-    for(let i=0;i<pixels.data.length;i+=4){
-        pixels.data[i+0]=pixels.data[i+0]+100
-        pixels.data[i+1]=pixels.data[i+1]-50
-        pixels.data[i+2]=pixels.data[i+2]*0.5
+const redEffect = (pixels) => {
+    for (let i = 0; i < pixels.data.length; i += 4) {
+        pixels.data[i + 0] = pixels.data[i + 0] + 100
+        pixels.data[i + 1] = pixels.data[i + 1] - 50
+        pixels.data[i + 2] = pixels.data[i + 2] * 0.5
     }
     return pixels
 }
 
-const rgbSplit=(pixels)=>{
-    for(let i=0;i<pixels.data.length;i+=4){
-        pixels.data[i-150]=pixels.data[i+0]
-        pixels.data[i+500]=pixels.data[i+1]
-        pixels.data[i-550]=pixels.data[i+2]
+const rgbSplit = (pixels) => {
+    for (let i = 0; i < pixels.data.length; i += 4) {
+        pixels.data[i - 150] = pixels.data[i + 0]
+        pixels.data[i + 500] = pixels.data[i + 1]
+        pixels.data[i - 550] = pixels.data[i + 2]
     }
     return pixels
 }
 
-const greenScreen=(pixels)=>{
-    let levels={}
-    document.querySelectorAll(".rgb input").forEach((input)=>{
-        levels[input.name]=input.value
+const greenScreen = (pixels) => {
+    let levels = {}
+    document.querySelectorAll(".rgb input").forEach((input) => {
+        levels[input.name] = input.value
     })
 
-    for(let i=0;i<pixels.data.length;i+=4){
-        const red=pixels.data[i+0]
-        const green=pixels.data[i+1]
-        const blue=pixels.data[i+2]
-        const alpha=pixels.data[i+3]
+    for (let i = 0; i < pixels.data.length; i += 4) {
+        const red = pixels.data[i + 0]
+        const green = pixels.data[i + 1]
+        const blue = pixels.data[i + 2]
+        const alpha = pixels.data[i + 3]
 
-        if(red>=levels.rmin 
-            && green>=levels.gmin 
-            && blue>=levels.bmin
-             &&red<=levels.rmax 
-             && blue<=levels.bmax 
-             && green<=levels.gmax){
-            pixels.data[i+3]=0
+        if (red >= levels.rmin
+            && green >= levels.gmin
+            && blue >= levels.bmin
+            && red <= levels.rmax
+            && blue <= levels.bmax
+            && green <= levels.gmax) {
+            pixels.data[i + 3] = 0
         }
     }
     return pixels
@@ -148,19 +159,19 @@ function addBrightness(x, y, value) {
 
 getVideo()
 
-video.addEventListener("canplay",paintToCanvas)
+video.addEventListener("canplay", paintToCanvas)
 
 function runPipeline() {
 
     currentPixels = originalPixels.slice()
 
-    const brightnessFilter = Number(brightness.value)
-    const contrastFilter = Number(contrast.value)
-    const redFilter = Number(red.value)
-    const greenFilter = Number(green.value)
-    const blueFilter = Number(blue.value)
+    brightnessFilter = Number(brightness.value)
+    contrastFilter = Number(contrast.value)
+    redFilter = Number(red.value)
+    greenFilter = Number(green.value)
+    blueFilter = Number(blue.value)
 
-    const grayscaleFilter = grayscale.checked
+    grayscaleFilter = grayscale.checked
     for (let i = 0; i < video.videoWidth; i++) {
         for (let j = 0; j < video.videoHeight; j++) {
 
@@ -188,7 +199,7 @@ function commitChanges() {
     for (let i = 0; i < pixels.data.length; i++) {
         pixels.data[i] = currentPixels[i]
     }
-    ctx.putImageData(pixels, 0, 0, 0, 0, video.videoWidth, video.videoHeight)
+    //ctx.putImageData(pixels, 0, 0, 0, 0, video.videoWidth, video.videoHeight)
 }
 
 function setGrayscale(x, y) {
