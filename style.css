@@ -1,0 +1,58 @@
+body{
+    background-color:#040714;
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+
+.photobooth{
+    display: flex;
+}
+
+.player{
+    height: 200px;
+    width:200px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 20px;
+}
+
+.gallery{
+    background-color:#090b13;
+    height: 100vh;
+    width: 25vw;
+}
+
+.gallery img{
+    height: 100px;
+    width: 100px;
+    margin: 10px;
+}
+
+.photo{
+    height:70vh;
+    width: 60vw;
+    margin: auto;
+    padding: 30px;
+}
+
+.controls{
+    background-image: linear-gradient(to right,#051421,#042727);
+}
+
+.rgb{
+    display: flex;
+    flex-direction: column;
+    width: 20vw;
+    padding: 10px;
+}
+
+button{
+    background-image: linear-gradient(to right,#042727,#051421);
+    height:50px;
+    width:100px;
+    border-radius: 30px;
+    color: aliceblue;
+    margin: 20px;
+}
