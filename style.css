@@ -5,6 +5,10 @@ body{
     color: white;
 }
 
+.header{
+    text-align: center;
+    font-family: 'Courgette', cursive;
+}
 .photobooth{
     display: flex;
 }
@@ -32,7 +36,7 @@ body{
 
 .photo{
     height:70vh;
-    width: 60vw;
+    width: 55vw;
     margin: auto;
     padding: 30px;
 }
